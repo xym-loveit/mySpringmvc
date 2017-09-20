@@ -12,10 +12,33 @@
         http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd"
        default-autowire="byName">
 
+
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"/>
+
+
+    <!--使验证支持国际化-->
     <mvc:annotation-driven/>
+    <!-- <mvc:annotation-driven validator="validatorFactoryBean"/>-->
+
+    <!-- <bean id="validatorFactoryBean" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+         <property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>
+         <property name="validationMessageSource" ref="messageSource"/>
+     </bean>-->
+
+    <!--<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">-->
+    <!--<property name="basename" value="i18n/message"/>-->
+    <!--<property name="fileEncodings" value="utf-8"/>-->
+    <!--<property name="cacheSeconds" value="120"/>-->
+    <!--<property name="useCodeAsDefaultMessage" value="true"/>-->
+    <!--</bean>-->
+
+
     <context:component-scan base-package="com.xym.spring.controller" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
-
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
 </beans>
