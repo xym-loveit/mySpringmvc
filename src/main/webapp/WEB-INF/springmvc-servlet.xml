@@ -60,6 +60,32 @@
                 <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
                 <bean class="org.springframework.http.converter.BufferedImageHttpMessageConverter"/>
                 <bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
+                    <property name="marshaller" ref="marshaller"/>
+                    <property name="unmarshaller" ref="marshaller"/>
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>application/xml;charset=UTF-8</value>
+                            <value>text/xml;charset=UTF-8</value>
+                            <value>text/html;charset=UTF-8</value>
+                        </list>
+                    </property>
+                </bean>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+
+    <!--声明marshaller使用XStream技术-->
+    <bean id="marshaller" class="org.springframework.oxm.xstream.XStreamMarshaller">
+        <property name="streamDriver">
+            <!--使用STAX对XML消息进行处理，STAX占用内存少，响应速度快-->
+            <bean class="com.thoughtworks.xstream.io.xml.StaxDriver"></bean>
+        </property>
+        <property name="annotatedClasses">
+            <list>
+                <!--使用XStream的注解定义XML转换规则，使用XStream注解的类在此声明-->
+                <value>com.xym.spring.module.MyDomain</value>
             </list>
         </property>
     </bean>

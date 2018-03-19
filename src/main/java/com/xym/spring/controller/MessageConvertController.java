@@ -1,18 +1,19 @@
 package com.xym.spring.controller;
 
+import com.xym.spring.module.MyDomain;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author xym
@@ -87,5 +88,67 @@ public class MessageConvertController {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @RequestMapping("/hd5")
+    public ResponseEntity<MyDomain> handler5(HttpEntity<MyDomain> httpEntity) {
+        MyDomain body = httpEntity.getBody();
+        body.setId("9999");
+        return new ResponseEntity<MyDomain>(body, HttpStatus.OK);
+    }
+
+    /**
+     * 每次请求其他方法前先执行此方法，并以domin为键添加到模型中
+     *
+     * @return
+     */
+    @ModelAttribute("domain")
+    public MyDomain getDomain() {
+        MyDomain myDomain = new MyDomain();
+        myDomain.setUsername("domainName");
+        myDomain.setRealName("李四");
+        myDomain.setPasspwd("789");
+        myDomain.setId("222");
+        return myDomain;
+    }
+
+    /**
+     * 每次请求其他方法前先执行此方法，并以domin为键添加到模型中
+     *
+     * @return
+     */
+    @ModelAttribute("aaa")
+    public String getAAA() {
+        return "--aaa--";
+    }
+
+    @RequestMapping("/hd6")
+    public String handler6(@ModelAttribute(value = "aaa") String aaa, @ModelAttribute("domain") MyDomain myDomain) {
+        System.out.println("aaa=" + aaa);
+        myDomain.setRealName("新李四");
+        return "show";
+    }
+
+    /**
+     * SpringMVC将请求对应的隐含模型对象传递给modelMap，因此在方法中可以通过它访问模型中的数据
+     *
+     * @param vv
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping("/hd7")
+    public String handler7(@RequestParam("vv") String vv, ModelMap modelMap) {
+        if (!modelMap.isEmpty()) {
+            Iterator<Map.Entry<String, Object>> iterator = modelMap.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, Object> next = iterator.next();
+                System.out.println(next.getKey() + "[--]" + next.getValue());
+                if (next.getKey().equals("domain")) {
+                    ((MyDomain) next.getValue()).setRealName("modelMap再改一次");
+                }
+            }
+            modelMap.put("other", "贱贱的笑一笑");
+        }
+        return "show";
     }
 }
